@@ -1,15 +1,12 @@
-import serial
-from time import sleep
+import psycopg2
 
-def get_dht22_data(request):
-    # Connect to arduino
-    arduino = serial.Serial('/dev/ttyUSB0', 9600)
-    arduino.flush()
-    data_sent = request.encode('utf-8')
-    arduino.write(data_sent)
-    sleep(0.60)
-    temp = float(arduino.readline().decode('utf-8').split("\r")[0])
-    # Close the serial connection
-    # arduino.close()
-    return temp
-    
+def insert_weather_data(sql, params):
+    # Connect to postgresql database
+    conn = psycopg2.connect("dbname= home_automation user=pi")
+    # Open a cursor to perform database operations
+    cur = conn.cursor()
+    # Execute a query
+    cur.execute(sql, params)
+    conn.commit()
+    cur.close()
+    conn.close()
